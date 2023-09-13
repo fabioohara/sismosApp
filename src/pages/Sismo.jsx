@@ -16,23 +16,7 @@ import { useSelector,useDispatch  } from 'react-redux';
 
 const Sismo = () => {
     //Verificación de MOVIL o DESKTOP
-    const [isMobile, setIsMobile] = useState(false)
-    //choose the screen size 
-    const handleResize = () => {
-        if (window.innerWidth < 720) {
-            setIsMobile(true)
-        } else {
-            setIsMobile(false)
-        }
-       
-    }
-
-      // create an event listener
-      useEffect(() => {
-        window.addEventListener("resize", handleResize)
-        console.log("MOBILE: "+isMobile)
-      },[window.innerWidth])
-
+    
     const maxlimit=40;
     const[sismos,setSismos]=useState([])
     const [zoomAction, setZoomAction] = useState(null);
@@ -170,8 +154,8 @@ return (
     onClick={() => updateData()}><PiSortAscendingBold/></button>*/}
 
 
-<div className='flex justify-center gap-10  w-[100%]'> 
-   <div className='flex justify-center gap-1'>
+<div className='flex justify-center gap-3  w-[100%] h-[70px] items-center'> 
+   <div className='flex justify-center gap-1 h-[33px]'>
   <button className="w-8 text-xs bg-slate-400 hover:bg-slate-700  text-white py-2 px-2  rounded-full transition-colors duration-300`}"
    onClick={() => {filtrarSismos('sismo.properties.mag>0'),setFiltro(">=2.5")}}>*</button>
    <button className="w-8 text-xs bg-red-400 hover:bg-red-700  text-white py-2 px-2  rounded-full transition-colors duration-300`}"
@@ -189,9 +173,7 @@ return (
   <button className={`w-8 text-base ${orden=='ASC'  ? 'bg-slate-300' : 'bg-white'} hover:bg-slate-300
     text-slate-700 py-2 px-2   rounded-sm transition-colors duration-300`}
     onClick={() => setOrden('ASC')}><PiSortAscendingBold/></button>
- 
 
- 
   </div>
 
 
@@ -200,9 +182,9 @@ return (
     {ordenados.length>0 && 
     ordenados.map((sismo,index)=>(
         
-      <div className='flex gap-1' item md={12} key={index} >
+      <div className='flex gap-1 min-w-[25%] max-w-[100%] items-center' key={index} >
 
-      <div className='flex justify-start my-4 items-center  gap-2'>
+      <div className='flex justify-start my-4 items-center  gap-2 w-[100%]'>
         <div className='font-semibold text-sm'>
           <button  key={index} onMouseDown={()=>{setCoordinates([sismo.geometry.coordinates[0],sismo.geometry.coordinates[1]]),setSelectedItem([sismo.properties.code])}} onClick={() => handleZoomButtonClick()}
           className={`${sismo.properties.mag>=5 ? 'bg-red-400 hover:bg-red-700' : sismo.properties.mag>=3 ? 'bg-orange-400 hover:bg-orange-700' : 'bg-blue-400 hover:bg-blue-700'}  text-white py-2 px-2  rounded transition-colors duration-300`}>
@@ -212,20 +194,20 @@ return (
         
           <div className='text-justify'>
 
-              <span className={`${isElement3Visible  ? 'text-black' : 'text-white'}   font-semibold text-xs text-ellipsis`}>{
+              <p className={`${isElement3Visible  ? 'text-black' : 'text-white'}   font-semibold text-xs leading-[1rem]`}>{
                 (((sismo.properties.place==null) ? 'Sin datos' : sismo.properties.place).length > maxlimit) ? 
                 ((((sismo.properties.place==null) ? 'Sin datos' : sismo.properties.place).substring(0,maxlimit-3)) + '...') : 
                 (sismo.properties.place==null) ? 'Sin datos' : sismo.properties.place
                 }
-              </span>
-              <div className={`${isElement3Visible  ? ' text-slate-700' : 'text-white'}  text-xs font-extralight`}>
-                  <p>{ moment.unix(sismo.properties.time/1000).format("DD MMM YYYY hh:mm a")} ({Math.round(sismo.geometry.coordinates[0] * 100) / 100}, {Math.round(sismo.geometry.coordinates[1] * 100) / 100})</p>
+              </p>
+              <div className={`${isElement3Visible  ? ' text-slate-700' : 'text-white'}  text-xs font-extralight leading-[1rem]`}>
+                  <p>{ moment.unix(sismo.properties.time / 1000).format("DD MMM YYYY hh:mm a")} ({Math.round(sismo.geometry.coordinates[0] * 100) / 100}, {Math.round(sismo.geometry.coordinates[1] * 100) / 100})</p>
               </div>  
            
           </div>
       
       </div>
-      <hr  className='border-slate-300'/>
+     
   </div>
     
 
