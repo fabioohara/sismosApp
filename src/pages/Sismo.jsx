@@ -5,18 +5,13 @@ import { getDataFromSismo } from '../services'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import MapComponent from '../Map/MapComponent'
-import { useMediaQuery } from 'react-responsive';
 import moment from 'moment/moment'
-import audio from '../assets/sounds/zoom.mp3'
 import { PiSortAscendingBold,PiSortDescendingBold } from 'react-icons/pi';
 
 import { useSelector,useDispatch  } from 'react-redux';
 
-
-
 const Sismo = () => {
-    //Verificación de MOVIL o DESKTOP
-    
+   
     const maxlimit=40;
     const[sismos,setSismos]=useState([])
     const [zoomAction, setZoomAction] = useState(null);
@@ -47,10 +42,7 @@ const Sismo = () => {
         
     }
  
-    const playAudio = () => {
-      new Audio(audio).play();
-    }
-
+  
     const handleZoomButtonClick = () => {
         //playAudio()
        const zoomData = {
@@ -108,20 +100,13 @@ const Sismo = () => {
      
     }
 
-    const updateData=()=>{
-         setUpdate(update+1)
-         console.log("updating...")
-    }
- 
     useEffect(() => {
       handleLight()
   
     },[isElement3Visible]);
 
-
     useEffect(() => {
       orderFiltered()
-  
     },[filtrados,orden]);
 
     const orderFiltered=()=>{
@@ -225,7 +210,7 @@ return (
   {filtrados.length>0 && 
  
        <MapComponent zoomAction={zoomAction} filterAction={filterAction} lightAction={lightAction}/>
-  
+        
   } 
     
     

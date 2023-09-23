@@ -19,9 +19,12 @@ import Projection from 'ol/proj/Projection';
 const MapComponent = ({ zoomAction,filterAction,lightAction }) => {
   const mapRef = useRef(null);
   const layerRef = useRef(null);
-  const selectedFeaturesLayer = useRef(null);
   const Base =useRef(null);
   const platesLayer =useRef(null);
+  const selectInteraction = useRef(null);
+  const [sismoSeleccionado,setSismoSeleccionado]=useState([]);
+ 
+
 ///ESTILOS
 const style=(feature)=> {
   // Define a style function that depends on the magnitude property of the feature
@@ -88,12 +91,114 @@ const platesStyle = new Style({
   })
 });
 
+const selectedStyle=(feature)=> {
+  // Define a style function that depends on the magnitude property of the feature
+  const magnitude = feature.get('magnitude');
+ 
+  let radius = 10; // Default radius
+  let color ='rgba(0, 0, 255, 0.5)';// Default color
+  let strokeColor='rgba(70,120,190,0.5)'
+  let font='bold 20px Calibri,sans-serif'
+
+  // Adjust radius and color based on magnitude
+  
+
+    if (magnitude >= 5) {
+      radius = 30;
+    
+        color = 'rgba(255, 0, 0, 0.5)';
+     
+    } else if (magnitude >= 3) {
+      radius = 20;
+    
+        color = 'rgba(255, 165, 0, 0.5)';
+     
+    }
+  
+  // Create a style with a circle
+  const style = new Style({
+    image: new Circle({
+      radius: radius,
+      fill: new Fill({
+        color: color,
+      }),
+      stroke: new Stroke({
+        color: strokeColor,
+        width: 10,
+      //  lineDash: [4,5]
+      }),
+    }),
+      text: new Text({
+        text: magnitude.toString(),
+        font: font,
+        fill: new Fill({
+          color: 'white', // Text color
+        }),
+        stroke: new Stroke({
+          color: color, // Text outline color
+          width: 3,
+        })
+     
+    })
+    
+  })
+
+  return style;
+}
+
+
+const wgs84Projection = new Projection({
+  code: 'EPSG:4326',
+  units: 'degrees',
+});
+
+const handleMapClick = (event) => {
+  event.preventDefault();
+  setSismoSeleccionado([])
+  event.target.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+    if (feature) {
+      const featureProperties = feature.getProperties();
+     console.log(featureProperties)
+      setSismoSeleccionado(featureProperties)
+     
+    }
+  });
+ /*
+  mapRef.current.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+   
+    if (feature) {
+      // Access feature properties here
+      const featureProperties = feature.getProperties();
+      
+    //  console.log('Clicked Feature Properties:', featureProperties);
+     // feature.setStyle(selectedStyle)
+
+    
+      // You can access specific properties, e.g., name, magnitude, date
+      /*const name = featureProperties.name;
+      const magnitude = featureProperties.magnitude;
+      const date = featureProperties.date;
+
+      // Do something with the feature's data
+    }
+  });
+  */
+};
+
+
+const selectedFeaturesSource = new VectorSource();
+ 
+const  selectedFeaturesLayer = new VectorLayer({
+  source: selectedFeaturesSource,
+  style: selectedStyle,
+  zIndex: 3 // Apply the selected style
+});
+
   useEffect(() => {
 
-    const wgs84Projection = new Projection({
-      code: 'EPSG:4326',
-      units: 'degrees',
-    });
+
+
+   
 
 
     const baseSource= new XYZ({ 
@@ -103,10 +208,7 @@ const platesStyle = new Style({
       Base.current= new TileLayer({source:baseSource,zIndex: 0})
     }
 
-
- 
-    
-      
+       
 
 
     if (!mapRef.current) {
@@ -119,8 +221,10 @@ const platesStyle = new Style({
           zoom: 2,
         }),
       });
-   
+      mapRef.current.addLayer(selectedFeaturesLayer);
     }
+    
+    
 
      if(!platesLayer.current){
     fetch('../public/plates.geojson')
@@ -159,111 +263,27 @@ const vectorSource = new VectorSource();
    
   
    
-    const selectedStyle=(feature)=> {
-      // Define a style function that depends on the magnitude property of the feature
-      const magnitude = feature.get('magnitude');
-     
-      let radius = 10; // Default radius
-      let color ='rgba(0, 0, 255, 0.5)';// Default color
-      let strokeColor='rgba(70,120,190,0.5)'
-      let font='bold 20px Calibri,sans-serif'
-    
-      // Adjust radius and color based on magnitude
-      
-    
-        if (magnitude >= 5) {
-          radius = 30;
-        
-            color = 'rgba(255, 0, 0, 0.5)';
-         
-        } else if (magnitude >= 3) {
-          radius = 20;
-        
-            color = 'rgba(255, 165, 0, 0.5)';
-         
-        }
-      
-      // Create a style with a circle
-      const style = new Style({
-        image: new Circle({
-          radius: radius,
-          fill: new Fill({
-            color: color,
-          }),
-          stroke: new Stroke({
-            color: strokeColor,
-            width: 10,
-          //  lineDash: [4,5]
-          }),
-        }),
-          text: new Text({
-            text: magnitude.toString(),
-            font: font,
-            fill: new Fill({
-              color: 'white', // Text color
-            }),
-            stroke: new Stroke({
-              color: color, // Text outline color
-              width: 3,
-            })
-         
-        })
-        
-      })
-
-      return style;
-    }
-
-     // Add this code block to your useEffect
-const selectedFeaturesSource = new VectorSource();
-
-if (!selectedFeaturesLayer.current) {
- selectedFeaturesLayer.current = new VectorLayer({
-  source: selectedFeaturesSource,
-  style: selectedStyle,
-  zIndex: 3 // Apply the selected style
-});
-mapRef.current.addLayer(selectedFeaturesLayer.current);
-}
+   
 
 
 
 
 
-    const selectInteraction  = new Select({
+    if (!selectInteraction.current) {
+    selectInteraction.current  = new Select({
       condition: click,
       layers: [layerRef.current],
       style: selectedStyle,
       
     });
+  }
 
-    mapRef.current.addInteraction(selectInteraction)
+    mapRef.current.addInteraction(selectInteraction.current)
    
 
 // Click en el mapa
 mapRef.current.on('click', (event) => {
-  selectedFeaturesSource.clear();
-  const clickedCoordinate = event.coordinate;
  
-  mapRef.current.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-  
-  
-    if (feature) {
-      // Access feature properties here
-      const featureProperties = feature.getProperties();
-      
-    //  console.log('Clicked Feature Properties:', featureProperties);
-     // feature.setStyle(selectedStyle)
-
-    
-      // You can access specific properties, e.g., name, magnitude, date
-      /*const name = featureProperties.name;
-      const magnitude = featureProperties.magnitude;
-      const date = featureProperties.date;
-*/
-      // Do something with the feature's data
-    }
-  });
 });
 
 const handleZoomAction = (action) => {
@@ -271,12 +291,11 @@ const handleZoomAction = (action) => {
   if (action) {
   
     if(action.accion==0){
-    selectedFeaturesLayer.current.getSource().clear()
+      selectInteraction.current.getFeatures().clear(); 
+      selectedFeaturesLayer.getSource().clear()
 
     const coordinates = fromLonLat(action.zoomTo);
     const code = action.code;
-   // mapRef.current.getView().setZoom(zoomLevel);
-   // mapRef.current.getView().setCenter(coordinates);
     const newPoint=new Point(coordinates)
 
     mapRef.current.getView().fit(newPoint, { 
@@ -287,26 +306,17 @@ const handleZoomAction = (action) => {
       easing: easeIn,
   });
 
-
+/*
     var features = layerRef.current.getSource().getFeatures();
     features.forEach((feature) => {
       if (feature.get('code') == code) {
-        const clonedFeature = new Feature({});
-        const clonedProperties = JSON.parse(JSON.stringify(feature.getProperties()));
-        clonedProperties.geometry = feature.getGeometry();
-        clonedFeature.setProperties(clonedProperties, true);
-
-        // Apply the selectedStyle to the cloned feature
-        clonedFeature.setStyle(selectedStyle);
-        // Add the cloned feature to the selectedFeaturesSource
-        selectedFeaturesLayer.current.getSource().addFeature(clonedFeature);
-
-        // Make sure you have deselected the original feature
-        selectInteraction.getFeatures().clear();
-        console.log(selectedFeaturesLayer.current.getSource().getFeatures().length);
+         
 
       }
+
+    
     });
+      */
   }
   }
 };
@@ -329,6 +339,9 @@ const handleZoomAction = (action) => {
           id:sismo.id,
           title:sismo.properties.title,
           magnitude:sismo.properties.mag,
+          tsunami:sismo.properties.tsunami,
+          place:sismo.properties.place,
+          color:parseInt(sismo.properties.mag)>=5 ? "red" : parseInt(sismo.properties.mag)>=3 ? "orange" : "blue"
         });
         // Add the feature to the vector source
         layerRef.current.getSource().addFeature(earthquakeFeature);
@@ -352,13 +365,35 @@ const handleZoomAction = (action) => {
   handleFilterAction(filterAction);
   handleLightAction(lightAction);
 
+  if (mapRef.current) {
+    // Attach the click event listener
+   
+
+    mapRef.current.on('click', handleMapClick);
+   // selectedFeaturesLayer.getSource().clear()
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      mapRef.current.un('click', handleMapClick);
+    };
+  }
 
 }, [zoomAction,filterAction,lightAction]);
 
 
   
 
-  return <div id="map" style={{ width: '100%' }}></div>;
+  return <>
+  <div id="map" style={{ width: '100%' }}></div>
+  {sismoSeleccionado.id && 
+  <div class={`bg-${sismoSeleccionado.color}-100 border border-slate-500  px-4 py-3 absolute z-10 bottom-[25px] right-0`} role="alert">
+  <p class="font-bold text-left">{sismoSeleccionado.title}</p>
+  <p class="text-sm text-left">Lugar: {sismoSeleccionado.place}</p>
+  <p class="text-sm text-left">Magnitud: {sismoSeleccionado.magnitude}</p>
+  <p class="text-sm text-left">{sismoSeleccionado.tsunami="0"? "Sin alerta de tsunami":"Alerta de tsunami"}</p>
+ </div>
+}
+  </>;
 };
 
 export default MapComponent;
