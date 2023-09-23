@@ -227,7 +227,7 @@ const  selectedFeaturesLayer = new VectorLayer({
     
 
      if(!platesLayer.current){
-    fetch('../public/plates.geojson')
+    fetch('https://raw.githubusercontent.com/fabioohara/sismosApp/main/public/plates.geojson')
     .then((response) => response.json())
     .then((geojsonData) => {
        platesLayer.current = new VectorLayer({
