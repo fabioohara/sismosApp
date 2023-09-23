@@ -44,7 +44,7 @@ const Sismo = () => {
  
   
     const handleZoomButtonClick = () => {
-        playAudio()
+       // playAudio()
        const zoomData = {
         zoomTo: coordinates, 
         zoomLevel:5,
