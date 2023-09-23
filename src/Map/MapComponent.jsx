@@ -340,8 +340,8 @@ const handleZoomAction = (action) => {
           title:sismo.properties.title,
           magnitude:sismo.properties.mag,
           tsunami:sismo.properties.tsunami,
-          place:sismo.properties.place,
-          color:parseInt(sismo.properties.mag)>=5 ? "red" : parseInt(sismo.properties.mag)>=3 ? "orange" : "blue"
+          place:sismo.properties.place
+         
         });
         // Add the feature to the vector source
         layerRef.current.getSource().addFeature(earthquakeFeature);
@@ -386,7 +386,7 @@ const handleZoomAction = (action) => {
   return <>
   <div id="map" style={{ width: '100%' }}></div>
   {sismoSeleccionado.id && 
-  <div class={`bg-${sismoSeleccionado.color}-100 border border-slate-500  px-4 py-3 absolute z-10 bottom-[25px] right-0`} role="alert">
+  <div class={`bg-slate-100 border border-slate-500  px-4 py-3 absolute z-10 bottom-[30px] right-1 w-1/4 rounded-md`} role="alert">
   <p class="font-bold text-left">{sismoSeleccionado.title}</p>
   <p class="text-sm text-left">Lugar: {sismoSeleccionado.place}</p>
   <p class="text-sm text-left">Magnitud: {sismoSeleccionado.magnitude}</p>

@@ -135,7 +135,7 @@ return (
    <Grid container spacing={0} className={`py-2 px-2 ${isElement2Visible  ? 'w-1/5' : 'w-[100%]'} ${isElement3Visible  ? 'bg-white' : 'bg-[#262626]'} `}>
 
 
-<div className='flex justify-center gap-3  w-[100%] h-[70px] items-center'> 
+<div className='flex flex-col md:flex-row justify-center gap-3 w-[100%] h-[70px] items-center'> 
    <div className='flex justify-center gap-1 h-[33px]'>
   <button className="w-8 text-xs bg-slate-400 hover:bg-slate-700  text-white py-2 px-2  rounded-full transition-colors duration-300`}"
    onClick={() => {filtrarSismos('sismo.properties.mag>0'),setFiltro(">=2.5")}}>*</button>
