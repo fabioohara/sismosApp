@@ -44,7 +44,7 @@ const Sismo = () => {
  
   
     const handleZoomButtonClick = () => {
-        //playAudio()
+        playAudio()
        const zoomData = {
         zoomTo: coordinates, 
         zoomLevel:5,
@@ -134,10 +134,6 @@ return (
  
    <Grid container spacing={0} className={`py-2 px-2 ${isElement2Visible  ? 'w-1/5' : 'w-[100%]'} ${isElement3Visible  ? 'bg-white' : 'bg-[#262626]'} `}>
 
- { /* <button className={`w-8 text-base 'bg-slate-300' hover:bg-slate-300
-    text-slate-700 py-2 px-2   rounded-sm transition-colors duration-300`}
-    onClick={() => updateData()}><PiSortAscendingBold/></button>*/}
-
 
 <div className='flex justify-center gap-3  w-[100%] h-[70px] items-center'> 
    <div className='flex justify-center gap-1 h-[33px]'>
@@ -210,7 +206,7 @@ return (
   {filtrados.length>0 && 
  
        <MapComponent zoomAction={zoomAction} filterAction={filterAction} lightAction={lightAction}/>
-        
+
   } 
     
     
