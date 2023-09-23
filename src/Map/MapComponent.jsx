@@ -386,7 +386,7 @@ const handleZoomAction = (action) => {
   return <>
   <div id="map" style={{ width: '100%' }}></div>
   {sismoSeleccionado.id && 
-  <div class={`bg-slate-100 border border-slate-500  px-4 py-3 absolute z-10 bottom-[30px] right-1 w-1/4 rounded-md`} role="alert">
+  <div class={`bg-slate-100 border border-slate-500  px-4 py-3 absolute z-10 bottom-[30px] right-1 w-1/3 rounded-md`} role="alert">
   <p class="font-bold text-left">{sismoSeleccionado.title}</p>
   <p class="text-sm text-left">Lugar: {sismoSeleccionado.place}</p>
   <p class="text-sm text-left">Magnitud: {sismoSeleccionado.magnitude}</p>
